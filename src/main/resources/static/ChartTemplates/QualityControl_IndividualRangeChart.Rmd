@@ -1,0 +1,54 @@
+---
+output: html_document
+---
+
+```{r, echo = FALSE, comment = "", warning = FALSE, message = FALSE}
+suppressWarnings( suppressMessages( library( dygraphs ) ) )
+measurements = c( measurementValues )
+ourCenterLimit = mean( measurements )
+measurementsMovingRanges = abs ( measurements[1:length(measurements)-1] -
+                                   measurements[2:length(measurements)] )
+movingRangeCenterLimit = mean( measurementsMovingRanges )
+ourStandardDeviation = movingRangeCenterLimit / 1.128
+ourUpperControlLimit = ourCenterLimit + ( 3 * ( movingRangeCenterLimit / 1.128 ) )
+ourLowerControlLimit = ourCenterLimit - ( 3 * ( movingRangeCenterLimit / 1.128 ) )
+ourBeyondLimits = c( which( measurements > ourUpperControlLimit )
+                  , which( measurements < ourLowerControlLimit ) )
+measurementsData = data.frame( Sequence = seq( 1, length( measurements ), 1 )
+                               , Values = measurements, BeyondLimits = NA )
+measurementsData$BeyondLimits[ourBeyondLimits] = measurementsData[ ourBeyondLimits, 2 ]
+ourLowerSpecificationLimit = LowerSpecificationLimitValue
+ourUpperSpecificationLimit = UpperSpecificationLimitValue
+
+dygraph( measurementsData, main = NULL
+         , xlab = "Sequence Number", ylab = "Value" ) %>%
+  dySeries( name = "Values", label = "Normal", drawPoints = TRUE, pointShape = "dot"
+            , color = "blue", pointSize = 2 ) %>%
+  dySeries( name = "BeyondLimits", label = "Beyond Lims", drawPoints = TRUE, pointShape = "dot"
+            , color = "red", pointSize = 3 ) %>%
+  dyLimit( ourUpperControlLimit, color = "black"
+           , label = "UCL", labelLoc = "left" ) %>% 
+  dyLimit( ourCenterLimit, color = "black"
+           , label = "CL", labelLoc = "left" ) %>% 
+  dyLimit( ourLowerControlLimit, color = "black"
+          , label = "LCL", labelLoc = "left" ) %>% 
+  dyLimit( ourUpperSpecificationLimit, color = "blue", label = "USL", labelLoc = "left" ) %>% 
+  dyLimit( ourLowerSpecificationLimit, color = "blue", label = "LSL", labelLoc = "left" ) %>% 
+  dyRangeSelector()
+```
+
+```{r, results = "asis", echo = FALSE, comment = "", warning = FALSE, message = FALSE}
+cat( paste0( '<p align = "left"><b>Number of measurements = </b>'
+             , length( measurements ) ) )
+cat( paste0( '<table align = "left"><tr><td><b>Center = </b>'
+             , round( ourCenterLimit, digits = 6 ), "</td>" ) )
+cat( paste0( "<td>&nbsp;&nbsp;&nbsp;<b>LCL = </b>"
+             , round( ourLowerControlLimit, digits = 6 ), "</td>" ) )
+cat( paste0( "<td>&nbsp;&nbsp;&nbsp;<b>Number beyond limits = </b>"
+             , length( ourBeyondLimits ), "</td></tr>" ) )
+cat( paste0( "<tr><td><b>StdDev = </b>"
+             , round( ourStandardDeviation, digits = 6 ), "</td>" ) )
+cat( paste0( "<td>&nbsp;&nbsp;&nbsp;<b>UCL = </b>"
+             , round( ourUpperControlLimit, digits = 6 ), "</td>" ) )
+cat( "<td>&nbsp;&nbsp;&nbsp;<b>Number violating runs = </b>NA</td></tr></table><p>&nbsp;<p>&nbsp;" )
+```

@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script type="text/javascript" charset="ISO-8859-1" src="DisplayChart.js"></script>
+</head>
+<body>
+
+<form name="ChartData" action="DisplayChart" method="post">
+<table>
+
+<tr><td>Copy and paste your data, only numbers separated by comma and click Display Chart.</td></tr>
+
+<tr><td>
+	<textarea rows="12" cols="99" id="chartdata" name="chartdata">-0.001, -0.011, .2, 0.001, -0.018, -0.019, -0.019, -0.012, -0.016, -.2</textarea>
+</td></tr>
+
+<tr><td>Lower Specification Limit:<input type="text" name="lsl" id="lsl" value="-0.1"></td></tr>
+<tr><td>Upper Specification Limit:<input type="text" name="usl" id="usl" value="0.1"></td></tr>
+<tr><td>Rscript path:<input type="text" name="rScriptPath" id="rScriptPath" size="50" value='"C:\\Program Files\\R\\R-3.5.1\\bin\\Rscript"'></td></tr>
+<tr><td>
+<input type="button" VALUE="Display Chart"
+onclick='JavaScript:xmlhttpPostScriptData( "DisplayChart", this.form, "iframeChartDisplay", "Display Chart" )'>
+</td></tr>
+
+</table>
+
+</form>
+
+<fieldset>
+<legend>Chart Display</legend>
+<p align="center">
+<iframe name="iframeChartDisplay" id="iframeChartDisplay" src="about:blank" frameborder="0"></iframe>
+</p>
+</fieldset>
+
+</body>
+</html>
